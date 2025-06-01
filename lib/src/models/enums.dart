@@ -4,7 +4,7 @@ enum NavigationStatus {
   offRoute,
   recalculating,
   completed,
-  error
+  error,
 }
 
 enum TrackingError {

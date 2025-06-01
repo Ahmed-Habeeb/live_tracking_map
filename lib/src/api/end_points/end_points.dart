@@ -3,7 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class EndPoints {
   // Base Url for end points
   static const String baseUrl = 'https://api.mashrouk.com/';
-  static  String api = "Constants.apiUrl";
+  static String api = "Constants.apiUrl";
 
   // EndPoints
   static const String login = 'auth/login/riders';
@@ -13,8 +13,7 @@ class EndPoints {
   static const String createRequest = '';
   static const String currentTripDetails = '';
 
-  static  String currentOrder(String riderId) => 'riders/currentOrder/$riderId';
-
+  static String currentOrder(String riderId) => 'riders/currentOrder/$riderId';
 
   static String getAddressFromLatLng(LatLng position) =>
       'https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.latitude},${position.longitude}&key=$mapKey';
@@ -27,6 +26,5 @@ class EndPoints {
 
   static String cancelTrip(String tripId) {
     return 'orders/$tripId/cancel';
-
   }
 }

@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 
-
 /// Factory class for creating and configuring a Dio instance
 class DioFactory {
   /// Private constructor to prevent instantiation
@@ -36,24 +35,26 @@ class DioFactory {
   ///
   /// Interceptors are used for adding headers, tokens, logging, etc.
   static void addDioInterceptor() {
-    dio?.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        // Do something before request is sent
-        // if (CacheHelper.containsKey(key: 'token')) {
-        //   options.headers['Authorization'] =
-        //       "Bearer ${CacheHelper.getData(key: "token")}";
-        // }
-        return handler.next(options); // continue
-      },
-      onResponse: (response, handler) {
-        // Do something with response data
-        return handler.next(response); // continue
-      },
-      onError: (e, handler) {
-        // Do something with response error
-        return handler.next(e); // continue
-      },
-    ));
+    dio?.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Do something before request is sent
+          // if (CacheHelper.containsKey(key: 'token')) {
+          //   options.headers['Authorization'] =
+          //       "Bearer ${CacheHelper.getData(key: "token")}";
+          // }
+          return handler.next(options); // continue
+        },
+        onResponse: (response, handler) {
+          // Do something with response data
+          return handler.next(response); // continue
+        },
+        onError: (e, handler) {
+          // Do something with response error
+          return handler.next(e); // continue
+        },
+      ),
+    );
     // dio?.interceptors.add(
     //   PrettyDioLogger(
     //     requestBody: true,

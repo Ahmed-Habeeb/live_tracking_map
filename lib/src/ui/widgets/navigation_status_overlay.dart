@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/enums.dart';
 import '../../models/navigation_state.dart';
 
-
 class NavigationStatusOverlay extends StatelessWidget {
-
   const NavigationStatusOverlay({
     super.key,
     required this.state,
@@ -56,7 +54,10 @@ class NavigationStatusOverlay extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.warning_amber_rounded, color: Colors.black),
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.black,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           state.status == NavigationStatus.recalculating
@@ -76,7 +77,9 @@ class NavigationStatusOverlay extends StatelessWidget {
                         height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.black,
+                          ),
                         ),
                       ),
                   ],

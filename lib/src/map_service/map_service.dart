@@ -10,4 +10,3 @@ abstract class MapService {
   Future<String> reverseGeocode(LatLng position);
   // Future<void> setMapStyle(String style);
 }
-

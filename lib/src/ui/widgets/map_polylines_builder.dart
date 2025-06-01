@@ -4,7 +4,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../models/navigation_state.dart';
 import '../../tracking_config.dart';
 
-
 class MapPolylinesBuilder {
   static Set<Polyline> build(NavigationState state) {
     final Set<Polyline> polylines = {};

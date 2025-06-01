@@ -3,7 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking_map/src/api/dio/dio_factory.dart';
 import 'package:live_tracking_map/src/map_service/map_service.dart';
 
-
 class OsrmMapService implements MapService {
   final Dio _dio = DioFactory.getDio();
 
@@ -11,18 +10,15 @@ class OsrmMapService implements MapService {
     _dio.options.baseUrl = osrmUrl;
   }
 
-
-
   final String _geocodeBaseUrl = 'https://nominatim.openstreetmap.org';
 
   @override
   Future<LatLng> geocodeAddress(String address) async {
     try {
       final response = await _dio.get(
-          '$_geocodeBaseUrl/search', queryParameters: {
-        'q': address,
-        'format': 'json',
-      });
+        '$_geocodeBaseUrl/search',
+        queryParameters: {'q': address, 'format': 'json'},
+      );
 
       if (response.statusCode == 200 && response.data.isNotEmpty) {
         final data = response.data[0];
@@ -38,8 +34,8 @@ class OsrmMapService implements MapService {
   Future<String> getDistanceBetweenPoints(LatLng point1, LatLng point2) async {
     try {
       final response = await _dio.get(
-          '/table/v1/driving/${point1.longitude},${point1.latitude};${point2
-              .longitude},${point2.latitude}');
+        '/table/v1/driving/${point1.longitude},${point1.latitude};${point2.longitude},${point2.latitude}',
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -59,17 +55,17 @@ class OsrmMapService implements MapService {
   @override
   Future<List<LatLng>> getRouteBetweenListPoints(List<LatLng> points) async {
     try {
-      final coords = points.map((p) => '${p.longitude},${p.latitude}').join(
-          ';');
+      final coords = points
+          .map((p) => '${p.longitude},${p.latitude}')
+          .join(';');
       final response = await _dio.get(
-          '/route/v1/driving/$coords', queryParameters: {
-        'overview': 'full',
-        'geometries': 'geojson',
-      });
+        '/route/v1/driving/$coords',
+        queryParameters: {'overview': 'full', 'geometries': 'geojson'},
+      );
 
       if (response.statusCode == 200) {
-        final List coordinates = response
-            .data['routes'][0]['geometry']['coordinates'];
+        final List coordinates =
+            response.data['routes'][0]['geometry']['coordinates'];
         return coordinates.map((coord) => LatLng(coord[1], coord[0])).toList();
       }
       throw Exception('Failed to fetch route');
@@ -87,11 +83,13 @@ class OsrmMapService implements MapService {
   Future<String> reverseGeocode(LatLng position) async {
     try {
       final response = await _dio.get(
-          '$_geocodeBaseUrl/reverse', queryParameters: {
-        'lat': position.latitude,
-        'lon': position.longitude,
-        'format': 'json',
-      });
+        '$_geocodeBaseUrl/reverse',
+        queryParameters: {
+          'lat': position.latitude,
+          'lon': position.longitude,
+          'format': 'json',
+        },
+      );
 
       if (response.statusCode == 200) {
         return response.data['display_name'];

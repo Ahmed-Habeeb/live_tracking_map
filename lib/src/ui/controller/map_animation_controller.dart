@@ -14,11 +14,11 @@ class MapAnimationController {
   }
 
   Future<void> animateToPosition(
-      LatLng position, {
-        double? zoom,
-        double? bearing,
-        double? tilt,
-      }) async {
+    LatLng position, {
+    double? zoom,
+    double? bearing,
+    double? tilt,
+  }) async {
     if (_controller == null) return;
 
     final CameraPosition targetPosition = CameraPosition(
@@ -51,8 +51,9 @@ class MapAnimationController {
   Future<void> _smoothAnimateCamera(CameraPosition targetPosition) async {
     _animationTimer?.cancel();
 
-     final int steps = TrackingConfig.cameraAnimationSteps.toInt();
-    final int stepDuration = TrackingConfig.cameraAnimationDuration.inMilliseconds ~/ steps;
+    final int steps = TrackingConfig.cameraAnimationSteps.toInt();
+    final int stepDuration =
+        TrackingConfig.cameraAnimationDuration.inMilliseconds ~/ steps;
 
     final double startLat = _lastCameraPosition!.target.latitude;
     final double startLng = _lastCameraPosition!.target.longitude;
@@ -63,33 +64,32 @@ class MapAnimationController {
 
     int step = 0;
 
-    _animationTimer = Timer.periodic(
-      Duration(milliseconds: stepDuration),
-          (Timer timer) async {
-        step++;
-        if (step > steps) {
-          timer.cancel();
-          _lastCameraPosition = targetPosition;
-          return;
-        }
+    _animationTimer = Timer.periodic(Duration(milliseconds: stepDuration), (
+      Timer timer,
+    ) async {
+      step++;
+      if (step > steps) {
+        timer.cancel();
+        _lastCameraPosition = targetPosition;
+        return;
+      }
 
-        final double t = step / steps.toDouble();
-        final double lat = _lerp(startLat, endLat, t);
-        final double lng = _lerp(startLng, endLng, t);
-        final double bearing = _lerpBearing(startBearing, endBearing, t);
+      final double t = step / steps.toDouble();
+      final double lat = _lerp(startLat, endLat, t);
+      final double lng = _lerp(startLng, endLng, t);
+      final double bearing = _lerpBearing(startBearing, endBearing, t);
 
-        await _controller!.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(lat, lng),
-              zoom: targetPosition.zoom,
-              tilt: targetPosition.tilt,
-              bearing: bearing,
-            ),
+      await _controller!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, lng),
+            zoom: targetPosition.zoom,
+            tilt: targetPosition.tilt,
+            bearing: bearing,
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 
   double _lerp(double a, double b, double t) => a + (b - a) * t;
@@ -108,10 +108,18 @@ class MapAnimationController {
     double northEastLng = points.first.longitude;
 
     for (final LatLng point in points) {
-      southWestLat = southWestLat < point.latitude ? southWestLat : point.latitude;
-      southWestLng = southWestLng < point.longitude ? southWestLng : point.longitude;
-      northEastLat = northEastLat > point.latitude ? northEastLat : point.latitude;
-      northEastLng = northEastLng > point.longitude ? northEastLng : point.longitude;
+      southWestLat = southWestLat < point.latitude
+          ? southWestLat
+          : point.latitude;
+      southWestLng = southWestLng < point.longitude
+          ? southWestLng
+          : point.longitude;
+      northEastLat = northEastLat > point.latitude
+          ? northEastLat
+          : point.latitude;
+      northEastLng = northEastLng > point.longitude
+          ? northEastLng
+          : point.longitude;
     }
 
     return LatLngBounds(

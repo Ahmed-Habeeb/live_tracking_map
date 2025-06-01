@@ -7,7 +7,6 @@ import '../../map_service/map_service.dart';
 import '../../models/enums.dart';
 import 'iroute_service.dart';
 
-
 class RouteService implements IRouteService {
   final MapService mapService; // Your existing MapService
 
@@ -23,7 +22,8 @@ class RouteService implements IRouteService {
         );
       }
 
-      final List<LatLng> routePoints = await mapService.getRouteBetweenListPoints(waypoints);
+      final List<LatLng> routePoints = await mapService
+          .getRouteBetweenListPoints(waypoints);
 
       if (routePoints.isEmpty) {
         throw const NavigationException(
@@ -76,10 +76,12 @@ class RouteService implements IRouteService {
 
   @override
   bool isPointNearRoute(LatLng point, List<LatLng> route, {double? threshold}) {
-    final double thresholdDistance = threshold ?? TrackingConfig.offRouteThreshold;
+    final double thresholdDistance =
+        threshold ?? TrackingConfig.offRouteThreshold;
 
     for (int i = 0; i < route.length - 1; i++) {
-      if (_pointToLineDistance(point, route[i], route[i + 1]) < thresholdDistance) {
+      if (_pointToLineDistance(point, route[i], route[i + 1]) <
+          thresholdDistance) {
         return true;
       }
     }
@@ -126,13 +128,16 @@ class RouteService implements IRouteService {
 
     if (dx == 0 && dy == 0) {
       return Geolocator.distanceBetween(
-        point.latitude, point.longitude,
-        lineStart.latitude, lineStart.longitude,
+        point.latitude,
+        point.longitude,
+        lineStart.latitude,
+        lineStart.longitude,
       );
     }
 
-    double t = ((point.longitude - lineStart.longitude) * dx +
-        (point.latitude - lineStart.latitude) * dy) /
+    double t =
+        ((point.longitude - lineStart.longitude) * dx +
+            (point.latitude - lineStart.latitude) * dy) /
         (dx * dx + dy * dy);
     t = t.clamp(0.0, 1.0);
 

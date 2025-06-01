@@ -4,30 +4,27 @@ import 'package:live_tracking_map/src/api/end_points/end_points.dart';
 import 'package:live_tracking_map/src/api/error_handler/api_error_handler.dart';
 import 'package:live_tracking_map/src/api/model/response_model.dart';
 
-
 /// API client class for making HTTP requests
 ///
 /// Extends [BaseDio] to provide methods for making HTTP requests
 class ApiClient extends BaseDio {
-
   /// Constructor for [ApiClient]
   ///
   /// \[options\] - The [BaseOptions] instance for configuring the [Dio] instance
   /// \[dio\] - The [Dio] instance to be used for making requests
-  ApiClient({
-    required BaseOptions options,
-    required Dio dio,
-  })  : _options = options,
-        _dio = dio {
+  ApiClient({required BaseOptions options, required Dio dio})
+    : _options = options,
+      _dio = dio {
     _dio.options = _options;
   }
+
   /// Instance of [Dio] for making HTTP requests
-   final Dio _dio;
+  final Dio _dio;
 
   /// Options for configuring the [Dio] instance
   final BaseOptions _options;
 
-   Dio get instance => _dio;
+  Dio get instance => _dio;
 
   /// Makes a POST request to the given path
   ///
@@ -54,7 +51,6 @@ class ApiClient extends BaseDio {
   }) async {
     try {
       _dio.options.baseUrl = baseUrl ?? EndPoints.api;
-      
 
       final Response<dynamic> res = await _dio.post(
         path,
@@ -68,10 +64,10 @@ class ApiClient extends BaseDio {
       if (res.statusCode == 200 || res.statusCode == 201) {
         return ResponseModel(success: true, data: res.data);
       } else {
-        return ApiErrorHandler.handleError(res,res.statusCode!);
+        return ApiErrorHandler.handleError(res, res.statusCode!);
       }
     } on DioException catch (e) {
-      return ApiErrorHandler.handleError(e,e.response?.statusCode ?? 500);
+      return ApiErrorHandler.handleError(e, e.response?.statusCode ?? 500);
     }
   }
 
@@ -107,10 +103,10 @@ class ApiClient extends BaseDio {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ResponseModel(success: true, data: response.data);
       } else {
-        return ApiErrorHandler.handleError(response,response.statusCode!);
+        return ApiErrorHandler.handleError(response, response.statusCode!);
       }
     } on DioException catch (e) {
-      return ApiErrorHandler.handleError(e,e.response?.statusCode ?? 500);
+      return ApiErrorHandler.handleError(e, e.response?.statusCode ?? 500);
     }
   }
 
@@ -148,10 +144,10 @@ class ApiClient extends BaseDio {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ResponseModel(success: true, data: response.data);
       } else {
-        return ApiErrorHandler.handleError(response,response.statusCode!);
+        return ApiErrorHandler.handleError(response, response.statusCode!);
       }
     } on DioException catch (e) {
-      return ApiErrorHandler.handleError(e,e.response?.statusCode ?? 500);
+      return ApiErrorHandler.handleError(e, e.response?.statusCode ?? 500);
     }
   }
 
@@ -193,10 +189,10 @@ class ApiClient extends BaseDio {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ResponseModel(success: true, data: response.data);
       } else {
-        return ApiErrorHandler.handleError(response,response.statusCode!);
+        return ApiErrorHandler.handleError(response, response.statusCode!);
       }
     } on DioException catch (e) {
-      return ApiErrorHandler.handleError(e,e.response?.statusCode ?? 500);
+      return ApiErrorHandler.handleError(e, e.response?.statusCode ?? 500);
     }
   }
 }

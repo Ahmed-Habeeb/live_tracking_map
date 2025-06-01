@@ -9,10 +9,10 @@ import 'package:live_tracking_map/src/models/navigation_execption.dart';
 import '../../tracking_config.dart';
 import 'ilocation_service.dart';
 
-
 class LocationService implements ILocationService {
   StreamSubscription<Position>? _positionSubscription;
-  final StreamController<Position> _positionController = StreamController<Position>.broadcast();
+  final StreamController<Position> _positionController =
+      StreamController<Position>.broadcast();
 
   @override
   Stream<Position> get positionStream => _positionController.stream;
@@ -28,7 +28,10 @@ class LocationService implements ILocationService {
 
       return LatLng(position.latitude, position.longitude);
     } catch (e) {
-      throw NavigationException(TrackingError.timeout, 'Failed to get current position: $e');
+      throw NavigationException(
+        TrackingError.timeout,
+        'Failed to get current position: $e',
+      );
     }
   }
 
@@ -60,20 +63,22 @@ class LocationService implements ILocationService {
       );
     }
   }
-@override
+
+  @override
   Future<void> startLocationTracking() async {
     await checkPermissions();
 
     _positionSubscription?.cancel();
-    _positionSubscription = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        // distanceFilter: TrackingConfig.minDistanceFilter,
-      ),
-    ).listen(
-      _positionController.add,
-      onError: (error) => debugPrint('Position stream error: $error'),
-    );
+    _positionSubscription =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            // distanceFilter: TrackingConfig.minDistanceFilter,
+          ),
+        ).listen(
+          _positionController.add,
+          onError: (error) => debugPrint('Position stream error: $error'),
+        );
   }
 
   @override

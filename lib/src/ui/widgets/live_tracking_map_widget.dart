@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -92,7 +90,10 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeAnimationController, curve: Curves.easeInOut),
+      CurvedAnimation(
+        parent: _fadeAnimationController,
+        curve: Curves.easeInOut,
+      ),
     );
 
     _navigationController.addListener(_onNavigationStateChanged);
@@ -245,21 +246,24 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
       right: 20,
       child: Consumer<NavigationController>(
         builder: (context, controller, child) {
-          final bool isCalculating = controller.state.status == NavigationStatus.recalculating;
+          final bool isCalculating =
+              controller.state.status == NavigationStatus.recalculating;
 
           return FloatingActionButton(
             heroTag: "reroute",
-            onPressed: !isCalculating ? () => controller.recalculateRoute() : null,
+            onPressed: !isCalculating
+                ? () => controller.recalculateRoute()
+                : null,
             backgroundColor: isCalculating ? Colors.grey : Colors.blue,
             child: isCalculating
                 ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
                 : const Icon(Icons.refresh),
           );
         },

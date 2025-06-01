@@ -10,14 +10,12 @@ import '../../services/loctaion_service/ilocation_service.dart';
 import '../../services/route_service/iroute_service.dart';
 import '../../tracking_config.dart';
 
-
 class NavigationController extends ChangeNotifier {
-
   NavigationController({
     required ILocationService locationService,
     required IRouteService routeService,
   }) : _locationService = locationService,
-        _routeService = routeService;
+       _routeService = routeService;
   final ILocationService _locationService;
   final IRouteService _routeService;
 
@@ -31,17 +29,21 @@ class NavigationController extends ChangeNotifier {
   LatLng? _previousPosition;
   LatLng? _destination;
 
-  Future<void> startNavigation(LatLng destination, {LatLng? pickupLocation}) async {
+  Future<void> startNavigation(
+    LatLng destination, {
+    LatLng? pickupLocation,
+  }) async {
     try {
       _destination = destination;
       _updateState(_state.copyWith(status: NavigationStatus.navigating));
 
-      final LatLng currentPosition = await _locationService.getCurrentPosition();
+      final LatLng currentPosition = await _locationService
+          .getCurrentPosition();
       _updateState(_state.copyWith(currentPosition: currentPosition));
 
       // Calculate initial route
       final List<LatLng> waypoints = pickupLocation != null
-          ? [ pickupLocation, destination]
+          ? [pickupLocation, destination]
           : [currentPosition, destination];
 
       await _calculateRoute(waypoints);
@@ -81,13 +83,18 @@ class NavigationController extends ChangeNotifier {
   }
 
   void _processPositionUpdate(Position position) {
-    final LatLng currentPosition = LatLng(position.latitude, position.longitude);
+    final LatLng currentPosition = LatLng(
+      position.latitude,
+      position.longitude,
+    );
     final double bearing = _calculateBearing(position);
 
-    _updateState(_state.copyWith(
-      currentPosition: currentPosition,
-      currentBearing: bearing,
-    ));
+    _updateState(
+      _state.copyWith(
+        currentPosition: currentPosition,
+        currentBearing: bearing,
+      ),
+    );
 
     _updateTravelProgress();
     _checkOffRoute();
@@ -104,7 +111,11 @@ class NavigationController extends ChangeNotifier {
       LatLng(position.latitude, position.longitude),
     );
 
-    return _lerpBearing(_state.currentBearing, newBearing, TrackingConfig.bearingLerpFactor);
+    return _lerpBearing(
+      _state.currentBearing,
+      newBearing,
+      TrackingConfig.bearingLerpFactor,
+    );
   }
 
   double _lerpBearing(double current, double target, double t) {
@@ -122,13 +133,20 @@ class NavigationController extends ChangeNotifier {
       _state.routePoints,
     );
 
-    final List<LatLng> traveledPoints = _state.routePoints.sublist(0, closestIndex + 1);
-    final List<LatLng> remainingPoints = _state.routePoints.sublist(closestIndex);
+    final List<LatLng> traveledPoints = _state.routePoints.sublist(
+      0,
+      closestIndex + 1,
+    );
+    final List<LatLng> remainingPoints = _state.routePoints.sublist(
+      closestIndex,
+    );
 
-    _updateState(_state.copyWith(
-      traveledPoints: traveledPoints,
-      routePoints: remainingPoints,
-    ));
+    _updateState(
+      _state.copyWith(
+        traveledPoints: traveledPoints,
+        routePoints: remainingPoints,
+      ),
+    );
   }
 
   void _checkOffRoute() {
@@ -178,7 +196,9 @@ class NavigationController extends ChangeNotifier {
 
   Future<void> _calculateRoute(List<LatLng> waypoints) async {
     try {
-      final List<LatLng> routePoints = await _routeService.calculateRoute(waypoints);
+      final List<LatLng> routePoints = await _routeService.calculateRoute(
+        waypoints,
+      );
       _updateState(_state.copyWith(routePoints: routePoints));
     } catch (e) {
       _handleError(e);
@@ -191,10 +211,9 @@ class NavigationController extends ChangeNotifier {
     final double distance = _routeService.calculateDistance(_state.routePoints);
     final Duration eta = _routeService.calculateETA(distance, speed);
 
-    _updateState(_state.copyWith(
-      remainingDistance: distance,
-      estimatedETA: eta,
-    ));
+    _updateState(
+      _state.copyWith(remainingDistance: distance, estimatedETA: eta),
+    );
   }
 
   void _handleError(dynamic error) {
@@ -203,23 +222,23 @@ class NavigationController extends ChangeNotifier {
     if (error is NavigationException) {
       navError = error;
     } else {
-      navError = NavigationException(
-        TrackingError.unknown,
-        error.toString(),
-      );
+      navError = NavigationException(TrackingError.unknown, error.toString());
     }
 
-    _updateState(_state.copyWith(
-      status: NavigationStatus.error,
-      error: navError.type,
-      errorMessage: navError.message,
-    ));
+    _updateState(
+      _state.copyWith(
+        status: NavigationStatus.error,
+        error: navError.type,
+        errorMessage: navError.message,
+      ),
+    );
   }
 
   void updateState(NavigationState newState) {
     _state = newState;
     notifyListeners();
   }
+
   void _updateState(NavigationState newState) {
     _state = newState;
     notifyListeners();

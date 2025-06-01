@@ -16,23 +16,23 @@ class MapMarkersBuilder {
 
     // Car marker
     if (carMarker != null && state.currentPosition != null) {
-      markers.add(carMarker.copyWith(
-        positionParam: liveTracking ? state.currentPosition : carMarker.position,
-      ));
+      markers.add(
+        carMarker.copyWith(
+          positionParam: liveTracking
+              ? state.currentPosition
+              : carMarker.position,
+        ),
+      );
     }
 
     // Pickup marker
     if (pickUpMarker != null && pickUpLocation != null) {
-      markers.add(pickUpMarker.copyWith(
-        positionParam: pickUpLocation,
-      ));
+      markers.add(pickUpMarker.copyWith(positionParam: pickUpLocation));
     }
 
     // Destination marker
     if (destinationMarker != null) {
-      markers.add(destinationMarker.copyWith(
-        positionParam: destination,
-      ));
+      markers.add(destinationMarker.copyWith(positionParam: destination));
     }
 
     return markers;

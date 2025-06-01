@@ -14,7 +14,6 @@ class GoogleMapService implements MapService {
   final String apiKey; // Your Google Maps API key
   final Dio _dio;
 
-
   @override
   Future<List<LatLng>> getRouteBetweenTwoPoints(
     LatLng point1,
@@ -164,7 +163,6 @@ class GoogleMapService implements MapService {
       throw Exception('Network error: ${e.message}');
     }
   }
-
 
   List<LatLng> _decodePoly(String encoded) {
     final List<LatLng> points = [];
