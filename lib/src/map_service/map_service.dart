@@ -8,7 +8,6 @@ abstract class MapService {
   Future<List<Marker>> getNearbyPlaces(LatLng center, double radius);
   Future<LatLng> geocodeAddress(String address);
   Future<String> reverseGeocode(LatLng position);
-  Future<void> setMapStyle(String style);
-  void setMapController(var controller);
+  // Future<void> setMapStyle(String style);
 }
 

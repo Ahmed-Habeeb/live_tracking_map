@@ -15,7 +15,7 @@ class MapPolylinesBuilder {
         Polyline(
           polylineId: const PolylineId('route'),
           points: state.routePoints,
-          color: Colors.blue.withOpacity(0.9),
+          color: Colors.blue.withValues(alpha: 0.9),
           width: TrackingConfig.routeWidth.toInt(),
           jointType: JointType.round,
           startCap: Cap.roundCap,

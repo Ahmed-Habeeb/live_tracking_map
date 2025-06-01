@@ -101,14 +101,4 @@ class OsrmMapService implements MapService {
       throw Exception('Failed to reverse geocode: $e');
     }
   }
-
-  @override
-  void setMapController(controller) {
-    // Not applicable for OSRM
-  }
-
-  @override
-  Future<void> setMapStyle(String style) async {
-    throw UnimplementedError('Map styling is not supported in OSRM');
-  }
 }

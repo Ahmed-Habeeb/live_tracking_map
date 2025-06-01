@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 /// Factory class for creating and configuring a Dio instance
 class DioFactory {

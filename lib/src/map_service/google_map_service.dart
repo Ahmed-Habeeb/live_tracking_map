@@ -12,16 +12,8 @@ class GoogleMapService implements MapService {
         ),
       );
   final String apiKey; // Your Google Maps API key
-  late GoogleMapController? _mapController;
   final Dio _dio;
 
-  @override
-  void setMapController(var controller) {
-    if (!controller is GoogleMapController) {
-      throw Exception('Invalid map controller');
-    }
-    _mapController = controller;
-  }
 
   @override
   Future<List<LatLng>> getRouteBetweenTwoPoints(
@@ -173,13 +165,6 @@ class GoogleMapService implements MapService {
     }
   }
 
-  @override
-  Future<void> setMapStyle(String style) async {
-    if (_mapController == null) {
-      throw Exception('Map controller not initialized');
-    }
-    await _mapController!.setMapStyle(style);
-  }
 
   List<LatLng> _decodePoly(String encoded) {
     final List<LatLng> points = [];
