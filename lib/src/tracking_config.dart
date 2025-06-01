@@ -1,5 +1,4 @@
 // ==================== CONFIG FILE ====================
-// lib/features/navigation/config/tracking_config.dart
 
 class TrackingConfig {
   // Route Detection

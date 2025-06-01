@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:live_tracking_map/src/api/end_points/end_points.dart';
 
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
@@ -23,7 +22,7 @@ class DioFactory {
     if (dio == null) {
       dio = Dio();
       dio!
-        ..options.baseUrl = EndPoints.api
+        // ..options.baseUrl = EndPoints.api
         ..options.connectTimeout = timeOut
         ..options.receiveTimeout = timeOut;
 
@@ -56,12 +55,12 @@ class DioFactory {
         return handler.next(e); // continue
       },
     ));
-    dio?.interceptors.add(
-      PrettyDioLogger(
-        requestBody: true,
-        requestHeader: true,
-        responseHeader: true,
-      ),
-    );
+    // dio?.interceptors.add(
+    //   PrettyDioLogger(
+    //     requestBody: true,
+    //     requestHeader: true,
+    //     responseHeader: true,
+    //   ),
+    // );
   }
 }

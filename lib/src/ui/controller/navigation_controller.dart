@@ -41,7 +41,7 @@ class NavigationController extends ChangeNotifier {
 
       // Calculate initial route
       final List<LatLng> waypoints = pickupLocation != null
-          ? [currentPosition, pickupLocation, destination]
+          ? [ pickupLocation, destination]
           : [currentPosition, destination];
 
       await _calculateRoute(waypoints);

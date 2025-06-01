@@ -2,28 +2,32 @@ import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking_map/src/map_service/map_service.dart';
 
-
 class GoogleMapService implements MapService {
-
-  GoogleMapService(this.apiKey) : _dio = Dio(BaseOptions(
-    baseUrl: 'https://maps.googleapis.com/maps/api/',
-    connectTimeout: const Duration(seconds: 15),
-    receiveTimeout: const Duration(seconds: 15),
-  ));
+  GoogleMapService({required this.apiKey})
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: 'https://maps.googleapis.com/maps/api/',
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 15),
+        ),
+      );
   final String apiKey; // Your Google Maps API key
   late GoogleMapController? _mapController;
   final Dio _dio;
 
   @override
   void setMapController(var controller) {
-    if (!controller is GoogleMapController){
+    if (!controller is GoogleMapController) {
       throw Exception('Invalid map controller');
     }
     _mapController = controller;
   }
 
   @override
-  Future<List<LatLng>> getRouteBetweenTwoPoints(LatLng point1, LatLng point2) async {
+  Future<List<LatLng>> getRouteBetweenTwoPoints(
+    LatLng point1,
+    LatLng point2,
+  ) async {
     final String url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=${point1.latitude},${point1.longitude}'
         '&destination=${point2.latitude},${point2.longitude}&mode=driving&key=$apiKey';
@@ -34,7 +38,8 @@ class GoogleMapService implements MapService {
         final Map<String, dynamic> data = response.data;
 
         if ((data['routes'] as List).isNotEmpty) {
-          final String encodedPolyline = data['routes'][0]['overview_polyline']['points'];
+          final String encodedPolyline =
+              data['routes'][0]['overview_polyline']['points'];
           return _decodePoly(encodedPolyline);
         } else {
           throw Exception('No routes found');
@@ -46,8 +51,6 @@ class GoogleMapService implements MapService {
       throw Exception('Error fetching route: $e');
     }
   }
-
-
 
   @override
   Future<List<LatLng>> getRouteBetweenListPoints(List<LatLng> points) async {
@@ -70,7 +73,9 @@ class GoogleMapService implements MapService {
       );
 
       if (response.statusCode == 200 && response.data['status'] == 'OK') {
-        return _decodePoly(response.data['routes'][0]['overview_polyline']['points']);
+        return _decodePoly(
+          response.data['routes'][0]['overview_polyline']['points'],
+        );
       }
       throw Exception('Failed to get route: ${response.data['status']}');
     } on DioException catch (e) {
@@ -122,7 +127,9 @@ class GoogleMapService implements MapService {
           );
         }).toList();
       }
-      throw Exception('Failed to get nearby places: ${response.data['status']}');
+      throw Exception(
+        'Failed to get nearby places: ${response.data['status']}',
+      );
     } on DioException catch (e) {
       throw Exception('Network error: ${e.message}');
     }
@@ -133,10 +140,7 @@ class GoogleMapService implements MapService {
     try {
       final response = await _dio.get(
         'geocode/json',
-        queryParameters: {
-          'address': address,
-          'key': apiKey,
-        },
+        queryParameters: {'address': address, 'key': apiKey},
       );
 
       if (response.statusCode == 200 && response.data['status'] == 'OK') {

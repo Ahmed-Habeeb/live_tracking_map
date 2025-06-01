@@ -5,8 +5,12 @@ import 'package:live_tracking_map/src/map_service/map_service.dart';
 
 
 class OsrmMapService implements MapService {
-  final Dio _dio = DioFactory.getDio()
-    ..options.baseUrl = 'Constants.osrmUrl';
+  final Dio _dio = DioFactory.getDio();
+
+  OsrmMapService({required String osrmUrl}) {
+    _dio.options.baseUrl = osrmUrl;
+  }
+
 
 
   final String _geocodeBaseUrl = 'https://nominatim.openstreetmap.org';

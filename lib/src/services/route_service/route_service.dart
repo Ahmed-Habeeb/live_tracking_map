@@ -3,12 +3,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:live_tracking_map/src/models/navigation_execption.dart';
 import 'package:live_tracking_map/src/tracking_config.dart';
 
+import '../../map_service/map_service.dart';
 import '../../models/enums.dart';
 import 'iroute_service.dart';
 
 
 class RouteService implements IRouteService {
-  final dynamic mapService; // Your existing MapService
+  final MapService mapService; // Your existing MapService
 
   RouteService(this.mapService);
 
