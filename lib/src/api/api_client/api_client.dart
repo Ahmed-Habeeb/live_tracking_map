@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:live_tracking_map/src/api/api_client/base_dio.dart';
-import 'package:live_tracking_map/src/api/end_points/end_points.dart';
 import 'package:live_tracking_map/src/api/error_handler/api_error_handler.dart';
 import 'package:live_tracking_map/src/api/model/response_model.dart';
 
@@ -50,7 +49,7 @@ class ApiClient extends BaseDio {
     String? baseUrl,
   }) async {
     try {
-      _dio.options.baseUrl = baseUrl ?? EndPoints.api;
+      _dio.options.baseUrl = baseUrl ?? "";
 
       final Response<dynamic> res = await _dio.post(
         path,
@@ -91,7 +90,7 @@ class ApiClient extends BaseDio {
     String? baseUrl,
   }) async {
     try {
-      _dio.options.baseUrl = baseUrl ?? EndPoints.api;
+      _dio.options.baseUrl = baseUrl ?? "";
 
       final Response<dynamic> response = await _dio.delete(
         path,
@@ -132,7 +131,7 @@ class ApiClient extends BaseDio {
     String? baseUrl,
   }) async {
     try {
-      _dio.options.baseUrl = baseUrl ?? EndPoints.api;
+      _dio.options.baseUrl = baseUrl ?? "";
 
       final Response<dynamic> response = await _dio.get(
         path,
@@ -175,7 +174,7 @@ class ApiClient extends BaseDio {
     String? baseUrl,
   }) async {
     try {
-      _dio.options.baseUrl = baseUrl ?? EndPoints.api;
+      _dio.options.baseUrl = baseUrl ?? "";
 
       final Response<dynamic> response = await _dio.put(
         path,
