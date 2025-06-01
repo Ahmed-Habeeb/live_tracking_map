@@ -242,22 +242,7 @@ lib/
   └── live_tracking_map.dart
 ```
 
-## Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
-
-For bugs and feature requests, please create an issue on the [GitHub repository](https://github.com/yourusername/live_tracking_map).
-
-For detailed documentation and more examples, visit our [documentation site](https://docs.yourpackage.dev).
