@@ -2,7 +2,7 @@
 
 class TrackingConfig {
   // Route Detection
-  static const double offRouteThreshold = 30.0;
+  static const double offRouteThreshold = 55.0;
   static const double minDistanceFilter = 2.0;
 
   // Timing Constants

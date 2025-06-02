@@ -23,6 +23,7 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.onDistanceUpdate,
     this.onETAUpdate,
     this.onRoutePointsUpdate,
+    this.onCurrentLocationUpdate,
     this.autoRecenter = true,
     this.pickUpMarker,
     this.carMarker,
@@ -45,6 +46,8 @@ class LiveTrackingMapWidget extends StatefulWidget {
   final Marker? destinationMarker;
   final bool liveTracking;
   final LatLng? currentLocation;
+  // function to handle the current location updates
+  final Function(LatLng)? onCurrentLocationUpdate;
 
   @override
   State<LiveTrackingMapWidget> createState() => _LiveTrackingMapWidgetState();
@@ -132,6 +135,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
     widget.onDistanceUpdate?.call(state.remainingDistance);
     widget.onETAUpdate?.call(state.estimatedETA);
     widget.onRoutePointsUpdate?.call(state.routePoints);
+    widget.onCurrentLocationUpdate?.call(state.currentPosition!);
 
     // Handle camera animation
     if (widget.autoRecenter && state.currentPosition != null) {
