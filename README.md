@@ -231,16 +231,6 @@ LiveTrackingMapWidget(
 );
 ```
 
-## Project Structure
-
-```
-lib/
-  ├── src/
-  │   ├── models/           # Data models
-  │   ├── services/         # Map services
-  │   └── widgets/          # UI components
-  └── live_tracking_map.dart
-```
 
 ## License
 
