@@ -24,29 +24,27 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.onETAUpdate,
     this.onRoutePointsUpdate,
     this.autoRecenter = true,
-    this.adjustCamera = true,
     this.pickUpMarker,
     this.carMarker,
     this.destinationMarker,
     this.liveTracking = true,
     this.currentLocation,
-    this.initialRoute,
+    this.initialPosition= const LatLng(30.031969, 31.4828379), // Default position
   });
 
   final MapService mapService; // Your existing MapService
   final LatLng destination;
   final LatLng? pickUpLocation;
+  final LatLng initialPosition;
   final Function(double)? onDistanceUpdate;
   final Function(Duration)? onETAUpdate;
   final Function(List<LatLng>)? onRoutePointsUpdate;
   final bool autoRecenter;
-  final bool adjustCamera;
   final Marker? pickUpMarker;
   final Marker? carMarker;
   final Marker? destinationMarker;
   final bool liveTracking;
   final LatLng? currentLocation;
-  final Set<Polyline>? initialRoute;
 
   @override
   State<LiveTrackingMapWidget> createState() => _LiveTrackingMapWidgetState();
@@ -60,14 +58,16 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
   late Animation<double> _fadeAnimation;
   // bool _isInitialized = false;
 
-  static const CameraPosition _defaultPosition = CameraPosition(
-    target: LatLng(37.7749, -122.4194),
-    zoom: 15,
-    tilt: 45,
-  );
+  late   CameraPosition _defaultPosition ;
 
   @override
   void initState() {
+    _defaultPosition = CameraPosition(
+      target: widget.initialPosition ,
+      zoom: 15,
+      tilt: 45
+
+    );
     super.initState();
     _initializeControllers();
     _startNavigation();
