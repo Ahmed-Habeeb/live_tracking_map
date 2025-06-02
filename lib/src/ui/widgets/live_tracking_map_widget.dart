@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:live_tracking_map/src/models/tracking_configuration.dart';
+import 'package:live_tracking_map/src/tracking_config.dart';
 
 import 'package:provider/provider.dart';
 
@@ -15,7 +17,7 @@ import 'map_polylines_builder.dart';
 import 'navigation_status_overlay.dart';
 
 class LiveTrackingMapWidget extends StatefulWidget {
-  const LiveTrackingMapWidget({
+  LiveTrackingMapWidget({
     required this.destination,
     required this.mapService,
     super.key,
@@ -30,8 +32,14 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.destinationMarker,
     this.liveTracking = true,
     this.currentLocation,
-    this.initialPosition= const LatLng(30.031969, 31.4828379), // Default position
-  });
+    this.trackingConfig,
+    this.initialPosition =
+        const LatLng(30.031969, 31.4828379), // Default position
+  }) {
+    if (trackingConfig != null) {
+      TrackingConfig().updateFromTrackingConfiguration(trackingConfig!);
+    }
+  }
 
   final MapService mapService; // Your existing MapService
   final LatLng destination;
@@ -46,6 +54,8 @@ class LiveTrackingMapWidget extends StatefulWidget {
   final Marker? destinationMarker;
   final bool liveTracking;
   final LatLng? currentLocation;
+  final TrackingConfiguration? trackingConfig;
+
   // function to handle the current location updates
   final Function(LatLng)? onCurrentLocationUpdate;
 
@@ -59,18 +69,15 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
   late MapAnimationController _mapAnimationController;
   late AnimationController _fadeAnimationController;
   late Animation<double> _fadeAnimation;
+
   // bool _isInitialized = false;
 
-  late   CameraPosition _defaultPosition ;
+  late CameraPosition _defaultPosition;
 
   @override
   void initState() {
-    _defaultPosition = CameraPosition(
-      target: widget.initialPosition ,
-      zoom: 15,
-      tilt: 45
-
-    );
+    _defaultPosition =
+        CameraPosition(target: widget.initialPosition, zoom: 15, tilt: 45);
     super.initState();
     _initializeControllers();
     _startNavigation();
@@ -255,9 +262,8 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
 
           return FloatingActionButton(
             heroTag: "reroute",
-            onPressed: !isCalculating
-                ? () => controller.recalculateRoute()
-                : null,
+            onPressed:
+                !isCalculating ? () => controller.recalculateRoute() : null,
             backgroundColor: isCalculating ? Colors.grey : Colors.blue,
             child: isCalculating
                 ? const SizedBox(

@@ -24,7 +24,7 @@ class LocationService implements ILocationService {
 
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-      ).timeout(TrackingConfig.locationTimeout);
+      ).timeout(TrackingConfig().locationTimeout);
 
       return LatLng(position.latitude, position.longitude);
     } catch (e) {
@@ -73,7 +73,7 @@ class LocationService implements ILocationService {
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.high,
-            // distanceFilter: TrackingConfig.minDistanceFilter,
+            // distanceFilter: TrackingConfig().minDistanceFilter,
           ),
         ).listen(
           _positionController.add,

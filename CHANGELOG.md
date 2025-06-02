@@ -7,3 +7,6 @@
 
 ## 0.0.3
 *  add initial CameraPosition
+
+## 0.0.4
+*  add TrackingConfiguration 

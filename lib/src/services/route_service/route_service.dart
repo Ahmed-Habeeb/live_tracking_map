@@ -64,20 +64,20 @@ class RouteService implements IRouteService {
 
   @override
   Duration calculateETA(double distance, double speed) {
-    final double speedKmh = speed > TrackingConfig.minSpeedThreshold
+    final double speedKmh = speed > TrackingConfig().minSpeedThreshold
         ? speed
-        : TrackingConfig.defaultSpeedKmh;
+        : TrackingConfig().defaultSpeedKmh;
 
     final int seconds = (distance / (speedKmh * 1000 / 3600)).round();
     final Duration eta = Duration(seconds: seconds);
 
-    return eta < TrackingConfig.minETA ? TrackingConfig.minETA : eta;
+    return eta < TrackingConfig().minETA ? TrackingConfig().minETA : eta;
   }
 
   @override
   bool isPointNearRoute(LatLng point, List<LatLng> route, {double? threshold}) {
     final double thresholdDistance =
-        threshold ?? TrackingConfig.offRouteThreshold;
+        threshold ?? TrackingConfig().offRouteThreshold;
 
     for (int i = 0; i < route.length - 1; i++) {
       if (_pointToLineDistance(point, route[i], route[i + 1]) <

@@ -77,7 +77,7 @@ class NavigationController extends ChangeNotifier {
 
   void _handlePositionUpdate(Position position) {
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(TrackingConfig.positionUpdateDebounce, () {
+    _debounceTimer = Timer(TrackingConfig().positionUpdateDebounce, () {
       _processPositionUpdate(position);
     });
   }
@@ -114,7 +114,7 @@ class NavigationController extends ChangeNotifier {
     return _lerpBearing(
       _state.currentBearing,
       newBearing,
-      TrackingConfig.bearingLerpFactor,
+      TrackingConfig().bearingLerpFactor,
     );
   }
 
@@ -168,7 +168,7 @@ class NavigationController extends ChangeNotifier {
 
   void _scheduleReroute() {
     _rerouteTimer?.cancel();
-    _rerouteTimer = Timer(TrackingConfig.rerouteDebounceDuration, () {
+    _rerouteTimer = Timer(TrackingConfig().rerouteDebounceDuration, () {
       if (_state.status == NavigationStatus.offRoute) {
         _performReroute();
       }
@@ -180,7 +180,7 @@ class NavigationController extends ChangeNotifier {
 
     final DateTime now = DateTime.now();
     if (_lastRerouteTime != null &&
-        now.difference(_lastRerouteTime!) < TrackingConfig.rerouteCooldown) {
+        now.difference(_lastRerouteTime!) < TrackingConfig().rerouteCooldown) {
       return;
     }
 

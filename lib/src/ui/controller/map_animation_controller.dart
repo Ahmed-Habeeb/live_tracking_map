@@ -23,9 +23,9 @@ class MapAnimationController {
 
     final CameraPosition targetPosition = CameraPosition(
       target: position,
-      zoom: zoom ?? TrackingConfig.defaultZoom,
+      zoom: zoom ?? TrackingConfig().defaultZoom,
       bearing: bearing ?? 0.0,
-      tilt: tilt ?? TrackingConfig.mapTilt,
+      tilt: tilt ?? TrackingConfig().mapTilt,
     );
 
     if (_lastCameraPosition == null) {
@@ -44,16 +44,16 @@ class MapAnimationController {
 
     final LatLngBounds bounds = _computeBounds(routePoints);
     await _controller!.animateCamera(
-      CameraUpdate.newLatLngBounds(bounds, TrackingConfig.cameraBoundsPadding),
+      CameraUpdate.newLatLngBounds(bounds, TrackingConfig().cameraBoundsPadding),
     );
   }
 
   Future<void> _smoothAnimateCamera(CameraPosition targetPosition) async {
     _animationTimer?.cancel();
 
-    final int steps = TrackingConfig.cameraAnimationSteps.toInt();
+    final int steps = TrackingConfig().cameraAnimationSteps.toInt();
     final int stepDuration =
-        TrackingConfig.cameraAnimationDuration.inMilliseconds ~/ steps;
+        TrackingConfig().cameraAnimationDuration.inMilliseconds ~/ steps;
 
     final double startLat = _lastCameraPosition!.target.latitude;
     final double startLng = _lastCameraPosition!.target.longitude;
