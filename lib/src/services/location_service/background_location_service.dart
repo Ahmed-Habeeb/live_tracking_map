@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -49,40 +50,33 @@ class BackgroundLocationService implements ILocationService {
 
     _subscription?.cancel();
 
-    final LocationSettings settings = LocationSettings(
-      accuracy: LocationAccuracy.best,
-      distanceFilter: TrackingConfig().minDistanceFilter.toInt(),
-      timeLimit: null,
-    );
-
-    final AndroidSettings androidSettings = AndroidSettings(
-      accuracy: LocationAccuracy.best,
-      distanceFilter: TrackingConfig().minDistanceFilter.toInt(),
-      intervalDuration: const Duration(seconds: 5),
-      foregroundNotificationConfig: const ForegroundNotificationConfig(
-        notificationTitle: 'Location Tracking',
-        notificationText: 'Tracking location in background',
-        notificationChannelName: 'Location',
-        enableWakeLock: true,
-      ),
-    );
-
-    final AppleSettings appleSettings = const AppleSettings(
-      accuracy: LocationAccuracy.best,
-      allowsBackgroundLocationUpdates: true,
-      showsBackgroundLocationIndicator: true,
-      distanceFilter: 0,
-      pauseLocationUpdatesAutomatically: false,
-    );
+    final LocationSettings locationSettings = Platform.isAndroid
+        ? AndroidSettings(
+            accuracy: LocationAccuracy.best,
+            distanceFilter: TrackingConfig().minDistanceFilter.toInt(),
+            intervalDuration: const Duration(seconds: 5),
+            foregroundNotificationConfig: const ForegroundNotificationConfig(
+              notificationTitle: 'Location Tracking',
+              notificationText: 'Tracking location in background',
+              notificationChannelName: 'Location',
+              enableWakeLock: true,
+            ),
+          )
+        : Platform.isIOS
+            ? const AppleSettings(
+                accuracy: LocationAccuracy.best,
+                allowsBackgroundLocationUpdates: true,
+                showsBackgroundLocationIndicator: true,
+                distanceFilter: 0,
+                pauseLocationUpdatesAutomatically: false,
+              )
+            : LocationSettings(
+                accuracy: LocationAccuracy.best,
+                distanceFilter: TrackingConfig().minDistanceFilter.toInt(),
+              );
 
     _subscription = Geolocator.getPositionStream(
-      locationSettings: settings.copyWith(
-        // Geolocator uses platform-specific settings under the hood if provided
-        // We conditionally pass them using the implementational types
-        // However, copyWith ignores unknown fields on each platform
-      ),
-      androidSettings: androidSettings,
-      appleSettings: appleSettings,
+      locationSettings: locationSettings,
     ).listen(
       (Position pos) {
         _controller.add(pos);
