@@ -6,7 +6,7 @@ import 'package:live_tracking_map/src/models/enums.dart';
 
 import '../../models/navigation_execption.dart';
 import '../../models/navigation_state.dart';
-import '../../services/loctaion_service/ilocation_service.dart';
+import '../../services/location_service/ilocation_service.dart';
 import '../../services/route_service/iroute_service.dart';
 import '../../tracking_config.dart';
 
