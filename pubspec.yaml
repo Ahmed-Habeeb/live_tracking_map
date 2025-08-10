@@ -15,6 +15,7 @@ dependencies:
   geolocator: ^13.0.2
   dio: ^5.8.0+1
   pretty_dio_logger: ^1.4.0
+  flutter_local_notifications: ^17.2.3
 
 dev_dependencies:
   flutter_test:

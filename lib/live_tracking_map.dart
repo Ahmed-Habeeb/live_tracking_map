@@ -8,3 +8,9 @@ export 'src/map_service/osrm_map_service.dart';
 
 // models
 export 'src/models/tracking_configuration.dart';
+export 'src/models/notification_content.dart';
+export 'src/models/notification_options.dart';
+
+// notification service
+export 'src/services/notification_service/inotification_service.dart';
+export 'src/services/notification_service/local_notification_service.dart';

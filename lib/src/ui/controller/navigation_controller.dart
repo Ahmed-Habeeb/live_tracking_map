@@ -9,15 +9,24 @@ import '../../models/navigation_state.dart';
 import '../../services/location_service/ilocation_service.dart';
 import '../../services/route_service/iroute_service.dart';
 import '../../tracking_config.dart';
+import '../../services/notification_service/inotification_service.dart';
+import '../../models/notification_content.dart';
+import '../../models/notification_options.dart';
 
 class NavigationController extends ChangeNotifier {
   NavigationController({
     required ILocationService locationService,
     required IRouteService routeService,
+    INotificationService? notificationService,
+    bool enableNotifications = false,
   }) : _locationService = locationService,
-       _routeService = routeService;
+       _routeService = routeService,
+       _notificationService = notificationService,
+       _notificationsEnabled = enableNotifications;
   final ILocationService _locationService;
   final IRouteService _routeService;
+  final INotificationService? _notificationService;
+  final bool _notificationsEnabled;
 
   NavigationState _state = const NavigationState(status: NavigationStatus.idle);
   NavigationState get state => _state;
@@ -38,6 +47,21 @@ class NavigationController extends ChangeNotifier {
       _destination = destination;
       _updateState(_state.copyWith(status: NavigationStatus.navigating));
 
+      if (_notificationsEnabled && _notificationService != null) {
+        await _notificationService!.init(
+          options: NotificationOptions(
+            channelId: TrackingConfig().notificationChannelId,
+            channelName: TrackingConfig().notificationChannelName,
+            channelDescription: TrackingConfig().notificationChannelDescription,
+            iconName: TrackingConfig().notificationIconName,
+            enableOngoing: TrackingConfig().notificationOngoing,
+            playSound: TrackingConfig().notificationPlaySound,
+            importanceHigh: TrackingConfig().notificationImportanceHigh,
+            showWhen: TrackingConfig().notificationShowWhen,
+          ),
+        );
+      }
+
       final LatLng currentPosition = await _locationService
           .getCurrentPosition();
       _updateState(_state.copyWith(currentPosition: currentPosition));
@@ -49,6 +73,8 @@ class NavigationController extends ChangeNotifier {
 
       await _calculateRoute(waypoints);
       await _startLocationTracking(onBackgroundLocation: onBackgroundLocation);
+
+      await _maybeUpdateNotification();
     } catch (e) {
       _handleError(e);
     }
@@ -104,6 +130,7 @@ class NavigationController extends ChangeNotifier {
     _updateTravelProgress();
     _checkOffRoute();
     _updateETAAndDistance(position.speed);
+    _maybeUpdateNotification();
 
     _previousPosition = currentPosition;
   }
@@ -237,11 +264,36 @@ class NavigationController extends ChangeNotifier {
         errorMessage: navError.message,
       ),
     );
+    _maybeUpdateNotification();
   }
 
   void _updateState(NavigationState newState) {
     _state = newState;
     notifyListeners();
+  }
+
+  Future<void> _maybeUpdateNotification() async {
+    if (!_notificationsEnabled || _notificationService == null) return;
+    final String statusText = switch (_state.status) {
+      NavigationStatus.navigating => 'Navigating',
+      NavigationStatus.offRoute => 'Off route, rerouting…',
+      NavigationStatus.recalculating => 'Rerouting…',
+      NavigationStatus.completed => 'Arrived',
+      NavigationStatus.error => 'Error',
+      NavigationStatus.idle => 'Idle',
+    };
+    final String etaText = _state.estimatedETA.inMinutes > 0
+        ? '${_state.estimatedETA.inMinutes} min'
+        : '< 1 min';
+    final String distanceKm = (_state.remainingDistance / 1000).toStringAsFixed(1);
+    await _notificationService!.showOrUpdate(
+      NotificationContent(
+        title: '$statusText · $etaText',
+        body: '$distanceKm km remaining',
+        ongoing: _state.status != NavigationStatus.completed &&
+                _state.status != NavigationStatus.error,
+      ),
+    );
   }
 
   @override

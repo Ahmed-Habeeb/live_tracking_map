@@ -11,6 +11,7 @@ import '../../models/navigation_state.dart';
 import '../../services/location_service/background_location_service.dart';
 import '../../services/location_service/location_service.dart';
 import '../../services/route_service/route_service.dart';
+import '../../services/notification_service/inotification_service.dart';
 import '../controller/map_animation_controller.dart';
 import '../controller/navigation_controller.dart';
 import 'map_markers_builder.dart';
@@ -36,6 +37,8 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.currentLocation,
     this.trackingConfig,
     this.useBackgroundService = false,
+    this.enableNotifications = false,
+    this.notificationService,
     this.initialPosition =
         const LatLng(30.031969, 31.4828379), // Default position
   }) {
@@ -59,6 +62,8 @@ class LiveTrackingMapWidget extends StatefulWidget {
   final LatLng? currentLocation;
   final TrackingConfiguration? trackingConfig;
   final bool useBackgroundService;
+  final bool enableNotifications;
+  final INotificationService? notificationService;
 
   // function to handle the current location updates
   final Function(LatLng)? onCurrentLocationUpdate;
@@ -97,6 +102,8 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
     _navigationController = NavigationController(
       locationService: locationService,
       routeService: routeService,
+      notificationService: widget.notificationService,
+      enableNotifications: widget.enableNotifications,
     );
 
     _mapAnimationController = MapAnimationController();
