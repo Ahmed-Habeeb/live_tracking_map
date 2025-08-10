@@ -142,7 +142,9 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
     widget.onDistanceUpdate?.call(state.remainingDistance);
     widget.onETAUpdate?.call(state.estimatedETA);
     widget.onRoutePointsUpdate?.call(state.routePoints);
-    widget.onCurrentLocationUpdate?.call(state.currentPosition!);
+    if (state.currentPosition != null) {
+      widget.onCurrentLocationUpdate?.call(state.currentPosition!);
+    }
 
     // Handle camera animation
     if (widget.autoRecenter && state.currentPosition != null) {
