@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../map_service/map_service.dart';
 import '../../models/enums.dart';
 import '../../models/navigation_state.dart';
+import '../../services/location_service/background_location_service.dart';
 import '../../services/location_service/location_service.dart';
 import '../../services/route_service/route_service.dart';
 import '../controller/map_animation_controller.dart';
@@ -88,7 +89,9 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
   }
 
   void _initializeControllers() {
-    final locationService = LocationService();
+    final locationService = widget.useBackgroundService
+        ? BackgroundLocationService()
+        : LocationService();
     final routeService = RouteService(widget.mapService);
 
     _navigationController = NavigationController(
