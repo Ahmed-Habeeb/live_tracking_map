@@ -47,6 +47,16 @@ class TrackingConfig {
   double cameraBoundsPadding = 50.0;
   double bearingLerpFactor = 0.2;
 
+  // Notification defaults
+  String notificationChannelId = 'live_tracking_channel';
+  String notificationChannelName = 'Live Tracking';
+  String notificationChannelDescription = 'Live tracking status updates';
+  String? notificationIconName;
+  bool notificationOngoing = true;
+  bool notificationPlaySound = false;
+  bool notificationImportanceHigh = true;
+  bool notificationShowWhen = false;
+
   // Method to reset to defaults
   void resetToDefaults() {
     offRouteThreshold = 55.0;
@@ -68,6 +78,14 @@ class TrackingConfig {
     markerSize = 60.0;
     cameraBoundsPadding = 50.0;
     bearingLerpFactor = 0.2;
+    notificationChannelId = 'live_tracking_channel';
+    notificationChannelName = 'Live Tracking';
+    notificationChannelDescription = 'Live tracking status updates';
+    notificationIconName = null;
+    notificationOngoing = true;
+    notificationPlaySound = false;
+    notificationImportanceHigh = true;
+    notificationShowWhen = false;
   }
  updateFromTrackingConfiguration(TrackingConfiguration config){
 
@@ -224,6 +242,14 @@ class TrackingConfig {
       'markerSize': markerSize,
       'cameraBoundsPadding': cameraBoundsPadding,
       'bearingLerpFactor': bearingLerpFactor,
+      'notificationChannelId': notificationChannelId,
+      'notificationChannelName': notificationChannelName,
+      'notificationChannelDescription': notificationChannelDescription,
+      'notificationIconName': notificationIconName,
+      'notificationOngoing': notificationOngoing,
+      'notificationPlaySound': notificationPlaySound,
+      'notificationImportanceHigh': notificationImportanceHigh,
+      'notificationShowWhen': notificationShowWhen,
     };
   }
 }

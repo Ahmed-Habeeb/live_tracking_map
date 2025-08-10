@@ -6,18 +6,31 @@ import 'package:live_tracking_map/src/models/enums.dart';
 
 import '../../models/navigation_execption.dart';
 import '../../models/navigation_state.dart';
-import '../../services/loctaion_service/ilocation_service.dart';
+import '../../services/location_service/ilocation_service.dart';
 import '../../services/route_service/iroute_service.dart';
 import '../../tracking_config.dart';
+import '../../services/notification_service/inotification_service.dart';
+import '../../models/notification_content.dart';
+import '../../models/notification_options.dart';
+import '../../services/notification_service/inotification_presenter.dart';
 
 class NavigationController extends ChangeNotifier {
   NavigationController({
     required ILocationService locationService,
     required IRouteService routeService,
+    INotificationService? notificationService,
+    bool enableNotifications = false,
+    INotificationPresenter? notificationPresenter,
   }) : _locationService = locationService,
-       _routeService = routeService;
+       _routeService = routeService,
+       _notificationService = notificationService,
+       _notificationsEnabled = enableNotifications,
+       _notificationPresenter = notificationPresenter;
   final ILocationService _locationService;
   final IRouteService _routeService;
+  final INotificationService? _notificationService;
+  final bool _notificationsEnabled;
+  final INotificationPresenter? _notificationPresenter;
 
   NavigationState _state = const NavigationState(status: NavigationStatus.idle);
   NavigationState get state => _state;
@@ -28,14 +41,31 @@ class NavigationController extends ChangeNotifier {
   DateTime? _lastRerouteTime;
   LatLng? _previousPosition;
   LatLng? _destination;
+  double _initialTotalDistance = 0;
 
   Future<void> startNavigation(
     LatLng destination, {
     LatLng? pickupLocation,
+    void Function(LatLng latLng)? onBackgroundLocation,
   }) async {
     try {
       _destination = destination;
       _updateState(_state.copyWith(status: NavigationStatus.navigating));
+
+      if (_notificationsEnabled && _notificationService != null) {
+        await _notificationService!.init(
+          options: NotificationOptions(
+            channelId: TrackingConfig().notificationChannelId,
+            channelName: TrackingConfig().notificationChannelName,
+            channelDescription: TrackingConfig().notificationChannelDescription,
+            iconName: TrackingConfig().notificationIconName,
+            enableOngoing: TrackingConfig().notificationOngoing,
+            playSound: TrackingConfig().notificationPlaySound,
+            importanceHigh: TrackingConfig().notificationImportanceHigh,
+            showWhen: TrackingConfig().notificationShowWhen,
+          ),
+        );
+      }
 
       final LatLng currentPosition = await _locationService
           .getCurrentPosition();
@@ -47,7 +77,9 @@ class NavigationController extends ChangeNotifier {
           : [currentPosition, destination];
 
       await _calculateRoute(waypoints);
-      await _startLocationTracking();
+      await _startLocationTracking(onBackgroundLocation: onBackgroundLocation);
+
+      await _maybeUpdateNotification();
     } catch (e) {
       _handleError(e);
     }
@@ -67,8 +99,12 @@ class NavigationController extends ChangeNotifier {
     await _calculateRoute([_state.currentPosition!, _destination!]);
   }
 
-  Future<void> _startLocationTracking() async {
-    await _locationService.startLocationTracking();
+  Future<void> _startLocationTracking({void Function(LatLng latLng)? onBackgroundLocation}) async {
+    await _locationService.startLocationTracking(onUpdate: (Position p) {
+      if (onBackgroundLocation != null) {
+        onBackgroundLocation(LatLng(p.latitude, p.longitude));
+      }
+    });
     _positionSubscription = _locationService.positionStream.listen(
       _handlePositionUpdate,
       onError: _handleError,
@@ -99,6 +135,7 @@ class NavigationController extends ChangeNotifier {
     _updateTravelProgress();
     _checkOffRoute();
     _updateETAAndDistance(position.speed);
+    _maybeUpdateNotification();
 
     _previousPosition = currentPosition;
   }
@@ -200,6 +237,8 @@ class NavigationController extends ChangeNotifier {
         waypoints,
       );
       _updateState(_state.copyWith(routePoints: routePoints));
+      // Capture initial total distance for progress notifications
+      _initialTotalDistance = _routeService.calculateDistance(routePoints);
     } catch (e) {
       _handleError(e);
     }
@@ -232,16 +271,32 @@ class NavigationController extends ChangeNotifier {
         errorMessage: navError.message,
       ),
     );
-  }
-
-  void updateState(NavigationState newState) {
-    _state = newState;
-    notifyListeners();
+    _maybeUpdateNotification();
   }
 
   void _updateState(NavigationState newState) {
     _state = newState;
     notifyListeners();
+  }
+
+  Future<void> _maybeUpdateNotification() async {
+    if (!_notificationsEnabled || _notificationService == null) return;
+    final NotificationContent content = _notificationPresenter?.buildContent(_state)
+        ?? NotificationContent(
+             title: 'ETA ${_state.estimatedETA.inMinutes} min',
+             body: '${(_state.remainingDistance / 1000).toStringAsFixed(1)} km remaining',
+             ongoing: _state.status != NavigationStatus.completed &&
+                     _state.status != NavigationStatus.error,
+             showProgress: _initialTotalDistance > 0,
+             indeterminate: _initialTotalDistance == 0,
+             progress: _initialTotalDistance == 0
+                 ? null
+                 : ((((_initialTotalDistance - _state.remainingDistance) / _initialTotalDistance)
+                         .clamp(0, 1)) * 100)
+                     .round(),
+             maxProgress: 100,
+           );
+    await _notificationService!.showOrUpdate(content);
   }
 
   @override

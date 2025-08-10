@@ -8,8 +8,10 @@ import 'package:provider/provider.dart';
 import '../../map_service/map_service.dart';
 import '../../models/enums.dart';
 import '../../models/navigation_state.dart';
-import '../../services/loctaion_service/location_service.dart';
+import '../../services/location_service/background_location_service.dart';
+import '../../services/location_service/location_service.dart';
 import '../../services/route_service/route_service.dart';
+import '../../services/notification_service/inotification_service.dart';
 import '../controller/map_animation_controller.dart';
 import '../controller/navigation_controller.dart';
 import 'map_markers_builder.dart';
@@ -26,6 +28,7 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.onETAUpdate,
     this.onRoutePointsUpdate,
     this.onCurrentLocationUpdate,
+    this.onBackgroundLocation,
     this.autoRecenter = true,
     this.pickUpMarker,
     this.carMarker,
@@ -33,6 +36,10 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.liveTracking = true,
     this.currentLocation,
     this.trackingConfig,
+    this.useBackgroundService = false,
+    this.enableNotifications = false,
+    this.notificationService,
+    this.notificationPresenter,
     this.initialPosition =
         const LatLng(30.031969, 31.4828379), // Default position
   }) {
@@ -55,9 +62,14 @@ class LiveTrackingMapWidget extends StatefulWidget {
   final bool liveTracking;
   final LatLng? currentLocation;
   final TrackingConfiguration? trackingConfig;
+  final bool useBackgroundService;
+  final bool enableNotifications;
+  final INotificationService? notificationService;
+  final INotificationPresenter? notificationPresenter;
 
   // function to handle the current location updates
   final Function(LatLng)? onCurrentLocationUpdate;
+  final Function(LatLng)? onBackgroundLocation;
 
   @override
   State<LiveTrackingMapWidget> createState() => _LiveTrackingMapWidgetState();
@@ -84,12 +96,17 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
   }
 
   void _initializeControllers() {
-    final locationService = LocationService();
+    final locationService = widget.useBackgroundService
+        ? BackgroundLocationService()
+        : LocationService();
     final routeService = RouteService(widget.mapService);
 
     _navigationController = NavigationController(
       locationService: locationService,
       routeService: routeService,
+      notificationService: widget.notificationService,
+      enableNotifications: widget.enableNotifications,
+      notificationPresenter: widget.notificationPresenter,
     );
 
     _mapAnimationController = MapAnimationController();
@@ -123,6 +140,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
       await _navigationController.startNavigation(
         widget.destination,
         pickupLocation: widget.pickUpLocation,
+        onBackgroundLocation: widget.onBackgroundLocation,
       );
 
       setState(() {
@@ -142,7 +160,9 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
     widget.onDistanceUpdate?.call(state.remainingDistance);
     widget.onETAUpdate?.call(state.estimatedETA);
     widget.onRoutePointsUpdate?.call(state.routePoints);
-    widget.onCurrentLocationUpdate?.call(state.currentPosition!);
+    if (state.currentPosition != null) {
+      widget.onCurrentLocationUpdate?.call(state.currentPosition!);
+    }
 
     // Handle camera animation
     if (widget.autoRecenter && state.currentPosition != null) {
