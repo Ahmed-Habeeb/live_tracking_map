@@ -5,7 +5,7 @@ abstract class ILocationService {
   Stream<Position> get positionStream;
   Future<LatLng> getCurrentPosition();
   Future<void> checkPermissions();
-  Future<void> startLocationTracking();
+  Future<void> startLocationTracking({void Function(Position position)? onUpdate});
   void stopLocationTracking();
   void dispose();
 }

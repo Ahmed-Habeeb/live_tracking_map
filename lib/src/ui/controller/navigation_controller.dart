@@ -6,7 +6,7 @@ import 'package:live_tracking_map/src/models/enums.dart';
 
 import '../../models/navigation_execption.dart';
 import '../../models/navigation_state.dart';
-import '../../services/loctaion_service/ilocation_service.dart';
+import '../../services/location_service/ilocation_service.dart';
 import '../../services/route_service/iroute_service.dart';
 import '../../tracking_config.dart';
 
@@ -32,6 +32,7 @@ class NavigationController extends ChangeNotifier {
   Future<void> startNavigation(
     LatLng destination, {
     LatLng? pickupLocation,
+    void Function(LatLng latLng)? onBackgroundLocation,
   }) async {
     try {
       _destination = destination;
@@ -47,7 +48,7 @@ class NavigationController extends ChangeNotifier {
           : [currentPosition, destination];
 
       await _calculateRoute(waypoints);
-      await _startLocationTracking();
+      await _startLocationTracking(onBackgroundLocation: onBackgroundLocation);
     } catch (e) {
       _handleError(e);
     }
@@ -67,8 +68,12 @@ class NavigationController extends ChangeNotifier {
     await _calculateRoute([_state.currentPosition!, _destination!]);
   }
 
-  Future<void> _startLocationTracking() async {
-    await _locationService.startLocationTracking();
+  Future<void> _startLocationTracking({void Function(LatLng latLng)? onBackgroundLocation}) async {
+    await _locationService.startLocationTracking(onUpdate: (Position p) {
+      if (onBackgroundLocation != null) {
+        onBackgroundLocation(LatLng(p.latitude, p.longitude));
+      }
+    });
     _positionSubscription = _locationService.positionStream.listen(
       _handlePositionUpdate,
       onError: _handleError,
@@ -232,11 +237,6 @@ class NavigationController extends ChangeNotifier {
         errorMessage: navError.message,
       ),
     );
-  }
-
-  void updateState(NavigationState newState) {
-    _state = newState;
-    notifyListeners();
   }
 
   void _updateState(NavigationState newState) {

@@ -65,7 +65,7 @@ class LocationService implements ILocationService {
   }
 
   @override
-  Future<void> startLocationTracking() async {
+  Future<void> startLocationTracking({void Function(Position position)? onUpdate}) async {
     await checkPermissions();
 
     _positionSubscription?.cancel();
@@ -76,7 +76,12 @@ class LocationService implements ILocationService {
             // distanceFilter: TrackingConfig().minDistanceFilter,
           ),
         ).listen(
-          _positionController.add,
+          (Position pos) {
+            _positionController.add(pos);
+            if (onUpdate != null) {
+              onUpdate(pos);
+            }
+          },
           onError: (error) => debugPrint('Position stream error: $error'),
         );
   }
