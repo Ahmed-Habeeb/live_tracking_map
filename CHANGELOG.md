@@ -13,3 +13,7 @@
 - feat: customizable notifications (interface + local implementation) with fully developer-controlled content and options
 - feat: widget/controller wiring to enable notifications and inject custom service
 - deps: add flutter_local_notifications 
+
+## 0.0.7
+- feat: notification presenters (simple + progress) with Android progress bar that reaches 100% on arrival
+- feat: widget/controller accept custom presenter injection 
