@@ -14,3 +14,6 @@ export 'src/models/notification_options.dart';
 // notification service
 export 'src/services/notification_service/inotification_service.dart';
 export 'src/services/notification_service/local_notification_service.dart';
+export 'src/services/notification_service/inotification_presenter.dart';
+export 'src/services/notification_service/simple_notification_presenter.dart';
+export 'src/services/notification_service/progress_notification_presenter.dart';

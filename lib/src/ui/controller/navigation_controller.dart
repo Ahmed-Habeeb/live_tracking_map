@@ -12,6 +12,7 @@ import '../../tracking_config.dart';
 import '../../services/notification_service/inotification_service.dart';
 import '../../models/notification_content.dart';
 import '../../models/notification_options.dart';
+import '../../services/notification_service/inotification_presenter.dart';
 
 class NavigationController extends ChangeNotifier {
   NavigationController({
@@ -19,14 +20,17 @@ class NavigationController extends ChangeNotifier {
     required IRouteService routeService,
     INotificationService? notificationService,
     bool enableNotifications = false,
+    INotificationPresenter? notificationPresenter,
   }) : _locationService = locationService,
        _routeService = routeService,
        _notificationService = notificationService,
-       _notificationsEnabled = enableNotifications;
+       _notificationsEnabled = enableNotifications,
+       _notificationPresenter = notificationPresenter;
   final ILocationService _locationService;
   final IRouteService _routeService;
   final INotificationService? _notificationService;
   final bool _notificationsEnabled;
+  final INotificationPresenter? _notificationPresenter;
 
   NavigationState _state = const NavigationState(status: NavigationStatus.idle);
   NavigationState get state => _state;
@@ -37,6 +41,7 @@ class NavigationController extends ChangeNotifier {
   DateTime? _lastRerouteTime;
   LatLng? _previousPosition;
   LatLng? _destination;
+  double _initialTotalDistance = 0;
 
   Future<void> startNavigation(
     LatLng destination, {
@@ -232,6 +237,8 @@ class NavigationController extends ChangeNotifier {
         waypoints,
       );
       _updateState(_state.copyWith(routePoints: routePoints));
+      // Capture initial total distance for progress notifications
+      _initialTotalDistance = _routeService.calculateDistance(routePoints);
     } catch (e) {
       _handleError(e);
     }
@@ -274,26 +281,22 @@ class NavigationController extends ChangeNotifier {
 
   Future<void> _maybeUpdateNotification() async {
     if (!_notificationsEnabled || _notificationService == null) return;
-    final String statusText = switch (_state.status) {
-      NavigationStatus.navigating => 'Navigating',
-      NavigationStatus.offRoute => 'Off route, rerouting…',
-      NavigationStatus.recalculating => 'Rerouting…',
-      NavigationStatus.completed => 'Arrived',
-      NavigationStatus.error => 'Error',
-      NavigationStatus.idle => 'Idle',
-    };
-    final String etaText = _state.estimatedETA.inMinutes > 0
-        ? '${_state.estimatedETA.inMinutes} min'
-        : '< 1 min';
-    final String distanceKm = (_state.remainingDistance / 1000).toStringAsFixed(1);
-    await _notificationService!.showOrUpdate(
-      NotificationContent(
-        title: '$statusText · $etaText',
-        body: '$distanceKm km remaining',
-        ongoing: _state.status != NavigationStatus.completed &&
-                _state.status != NavigationStatus.error,
-      ),
-    );
+    final NotificationContent content = _notificationPresenter?.buildContent(_state)
+        ?? NotificationContent(
+             title: 'ETA ${_state.estimatedETA.inMinutes} min',
+             body: '${(_state.remainingDistance / 1000).toStringAsFixed(1)} km remaining',
+             ongoing: _state.status != NavigationStatus.completed &&
+                     _state.status != NavigationStatus.error,
+             showProgress: _initialTotalDistance > 0,
+             indeterminate: _initialTotalDistance == 0,
+             progress: _initialTotalDistance == 0
+                 ? null
+                 : ((((_initialTotalDistance - _state.remainingDistance) / _initialTotalDistance)
+                         .clamp(0, 1)) * 100)
+                     .round(),
+             maxProgress: 100,
+           );
+    await _notificationService!.showOrUpdate(content);
   }
 
   @override

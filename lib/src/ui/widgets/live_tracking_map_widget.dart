@@ -39,6 +39,7 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.useBackgroundService = false,
     this.enableNotifications = false,
     this.notificationService,
+    this.notificationPresenter,
     this.initialPosition =
         const LatLng(30.031969, 31.4828379), // Default position
   }) {
@@ -64,6 +65,7 @@ class LiveTrackingMapWidget extends StatefulWidget {
   final bool useBackgroundService;
   final bool enableNotifications;
   final INotificationService? notificationService;
+  final INotificationPresenter? notificationPresenter;
 
   // function to handle the current location updates
   final Function(LatLng)? onCurrentLocationUpdate;
@@ -104,6 +106,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
       routeService: routeService,
       notificationService: widget.notificationService,
       enableNotifications: widget.enableNotifications,
+      notificationPresenter: widget.notificationPresenter,
     );
 
     _mapAnimationController = MapAnimationController();

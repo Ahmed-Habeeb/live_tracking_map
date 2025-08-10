@@ -58,6 +58,10 @@ class LocalNotificationService implements INotificationService {
       autoCancel: !_options.enableOngoing,
       showWhen: _options.showWhen,
       icon: _options.iconName,
+      showProgress: content.showProgress,
+      maxProgress: content.maxProgress,
+      progress: content.progress,
+      indeterminate: content.indeterminate,
     );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
