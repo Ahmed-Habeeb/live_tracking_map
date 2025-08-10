@@ -26,6 +26,7 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.onETAUpdate,
     this.onRoutePointsUpdate,
     this.onCurrentLocationUpdate,
+    this.onBackgroundLocation,
     this.autoRecenter = true,
     this.pickUpMarker,
     this.carMarker,
@@ -33,6 +34,7 @@ class LiveTrackingMapWidget extends StatefulWidget {
     this.liveTracking = true,
     this.currentLocation,
     this.trackingConfig,
+    this.useBackgroundService = false,
     this.initialPosition =
         const LatLng(30.031969, 31.4828379), // Default position
   }) {
@@ -55,9 +57,11 @@ class LiveTrackingMapWidget extends StatefulWidget {
   final bool liveTracking;
   final LatLng? currentLocation;
   final TrackingConfiguration? trackingConfig;
+  final bool useBackgroundService;
 
   // function to handle the current location updates
   final Function(LatLng)? onCurrentLocationUpdate;
+  final Function(LatLng)? onBackgroundLocation;
 
   @override
   State<LiveTrackingMapWidget> createState() => _LiveTrackingMapWidgetState();
@@ -123,6 +127,7 @@ class _LiveTrackingMapWidgetState extends State<LiveTrackingMapWidget>
       await _navigationController.startNavigation(
         widget.destination,
         pickupLocation: widget.pickUpLocation,
+        onBackgroundLocation: widget.onBackgroundLocation,
       );
 
       setState(() {
