@@ -8,3 +8,8 @@
 - fix: null-guard onCurrentLocationUpdate callback
 - chore: rename services/loctaion_service to services/location_service
 - refactor: remove redundant public updateState in NavigationController 
+
+## 0.0.6
+- feat: customizable notifications (interface + local implementation) with fully developer-controlled content and options
+- feat: widget/controller wiring to enable notifications and inject custom service
+- deps: add flutter_local_notifications 
