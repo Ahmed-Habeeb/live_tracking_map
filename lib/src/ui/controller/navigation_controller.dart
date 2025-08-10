@@ -234,11 +234,6 @@ class NavigationController extends ChangeNotifier {
     );
   }
 
-  void updateState(NavigationState newState) {
-    _state = newState;
-    notifyListeners();
-  }
-
   void _updateState(NavigationState newState) {
     _state = newState;
     notifyListeners();
